@@ -1,52 +1,32 @@
 #!/usr/bin/python3
 
-import gnupg
-from pathlib import Path
+# TODO 
+# - Dodać enkrypcje wiadomosci wysylanej i odbieranej
 
-private=Path("/home/mariusz/.ssh/private_key_file.asc")
+import openai
 
-# initialize GPG instance
-gpg = gnupg.GPG()
+# Initialize OpenAI API with your API key
+openai.api_key = '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'
 
-# get user's public and private keys
-public_key = gpg.import_keys(open('public_key_file.asc').read())
-private_key = gpg.import_keys(open(private).read())
+# Define a function to generate a response from GPT
+def generate_response(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt=prompt,
+        max_tokens=100,
+        n=1,
+        stop=None,
+        temperature=0.7
+    )
+    return response.choices[0].text.strip()
 
-# define function for encrypting message
-def encrypt_message(message, recipient):
-    encrypted_data = gpg.encrypt(message, recipient)
-    return str(encrypted_data)
-
-# define function for decrypting message
-def decrypt_message(encrypted_message):
-    decrypted_data = gpg.decrypt(encrypted_message, passphrase='your_passphrase')
-    return str(decrypted_data)
-
-# define function for sending message
-def send_message(message, recipient):
-    # encrypt message
-    encrypted_message = encrypt_message(message, recipient)
-    # send encrypted message to recipient
-    # code for sending message goes here
-
-# define function for receiving message
-def receive_message():
-    # receive encrypted message from sender
-    # code for receiving message goes here
-    encrypted_message = received_message
-    # decrypt message
-    decrypted_message = decrypt_message(encrypted_message)
-    return decrypted_message
-
-# main program loop
+# Main loop for the chat
 while True:
-    # get user input
-    message = input("Enter message: ")
-    recipient = input("Enter recipient email: ")
-    
-    # send message
-    send_message(message, recipient)
-    
-    # receive message
-    received_message = receive_message()
-    print("Received message: ", received_message)
+    user_input = input("User: ")  # Get user input
+    if user_input.lower() == 'exit':
+        print("Chatbot: Goodbye!")
+        break  # Exit the loop if user enters 'exit'
+    else:
+        prompt = f"User: {user_input}\nChatbot:"
+        response = generate_response(prompt)
+        print("Chatbot:", response)  # Generate and print chatbot's response
