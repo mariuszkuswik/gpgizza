@@ -6,7 +6,7 @@
 import openai
 
 # Initialize OpenAI API with your API key
-openai.api_key = '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'
+openai.api_key = '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'
 
 # Define a function to generate a response from GPT
 def generate_response(prompt):
